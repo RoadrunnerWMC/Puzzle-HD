@@ -1,0 +1,261 @@
+
+########################################################
+#
+#BG_chk (behaviour/collisions)
+#    {
+#        char ?
+#        char ?
+#        char ?
+#        char ?
+#        char ?
+#        char ?
+#        char ?
+#        char ?
+#    }
+#
+#
+#BG_unt (objects)
+#    { (Tiles)
+#        char bitfield (0000 0001 == X repeat, 0000 0010 == Y Repeat,
+#                       0000 0011 == Both repeat, 1000 0000 == Slope flag)
+#        char tilenumber
+#        char bitfield (bottom two bits are tileset number, rest is a parameter)
+#    }
+#    { (Slope)
+#        char (bitfield. 0x1 = Swap directions X
+#                        0x2 = Swap directions y (and swap slope blocks)
+#                        0x4 = Unknown
+#                        0x8 = Unknown
+#                        0x10 = Unknown
+#                        0x20 = "  "
+#                        0x40 = "  "
+#                        0x80 = Slope Flag
+#    }
+#    { (other crud)
+#        char (0xFE linefeed for each tile row)
+#        char (0xFF end of object)
+#    }
+#
+#
+#    _hd (metadata)
+#    {
+#        short offset
+#        char height
+#        char width
+#        char pad
+#        char randomization
+#    }
+#
+########################################################
+
+
+NSMBU Randomization Options
+---------------------------
+The final byte of the BG_unt/xxx_hd.bin struct.
+It's divided into its upper and lower nybble.
+    - Upper nybble: Bitfield showing in which directions randomization must happen
+        - 0b00AB
+          If A: randomize vertically
+          If B: randomize horizontally
+          0b0000 would be for a corner tile
+          0b0001 would be for a ceiling section
+          0b0010 would be for an edge piece
+          0b0011 would be for a generic dirt section
+    - Lower nybble is the # of tiles to be used as replacements
+        - Including the mapped tile itself
+    - If the randomization byte is nonzero, the object MUST be size 1x1!
+
+
+
+
+
+All used values of BG_chk:
+
+Byte 0 - Core Type: (missing 0x8, 0xD, 0x15)
+0x0
+0x1    Line Guides
+0x2    Dash Coin (Outline)
+0x3    Coin / Blue Coin
+0x4    Blue Coin with Fuzzy Outline (Pa0_jyotyu, object 51)
+0x5    Used Item Block, Wood Block, Stone Block, Red Block
+0x6    Breakable Brick Block
+0x7    ? Block with 1 Coin
+0x9    Mini-Mario Passageway
+0xA    Invisible Block with Item
+0xB    Upward-facing (ground) Slope [also used for Brick Block with Item]
+0xC    Downward-facing (ceiling) Slope [also used for ? Block with Item]
+0xE    Rock Climbing Wall (see: Pa1_8-4_1)
+0xF    Spike Tile (deals damage - used for spikes and munchers)
+0x10   Pipes and Pipe Joints
+0x11   Conveyor Belt
+0x12   Donut Block
+0x13   Hidden Lay0 Cave Entrance Hint Tiles
+0x14   Rock Climbing Wall with Shimmy Ledge On Top (see: Pa1_8-4_1)
+0x16   The kanji thing just to the right of the invisible block with ice flower (not mapped to an object)
+
+
+Byte 1 - Pad:
+0x0
+
+
+Byte 2 - Properties:
+    If Main is 0x0:
+        0x0    Normal
+        0x1    Vine Stopper
+    If Main is 0x1:
+        2x2 Circle: AB
+                    CD
+        4x4 Circle: ABCD
+                    E  F
+                    G  H
+                    IJKL
+        0x0    Upslope
+        0x1    Downslope
+        0x2    Top-Left Corner
+        0x3    Bottom-Right Corner
+        0x4    Horizontal
+        0x5    Vertical
+        0x6    Blank tile, for filling in empty sections of circles and slopes
+        0x7    2x1 Gradual Upslope Pt. 2
+        0x8    2x1 Gradual Upslope Pt. 1
+        0x9    2x1 Gradual Downslope Pt. 2
+        0xA    2x1 Gradual Downslope Pt. 1
+        0xB    Ultrasteep Upslope Top
+        0xC    Ultrasteep Upslope Btm
+        0xD    Ultrasteep Downslope Top
+        0xE    Ultrasteep Downslope Btm
+        0xF    1x1 Circle
+        0x10   2x2 Circle B
+        0x11   2x2 Circle A
+        0x12   2x2 Circle D
+        0x13   2x2 Circle C
+        0x14   4x4 Circle A
+        0x15   4x4 Circle B
+        0x16   4x4 Circle C
+        0x17   4x4 Circle D
+        0x18   4x4 Circle E
+        0x19   4x4 Circle F
+        0x1A   4x4 Circle G
+        0x1B   4x4 Circle H
+        0x1C   4x4 Circle I
+        0x1D   4x4 Circle J
+        0x1E   4x4 Circle K
+        0x1F   4x4 Circle L
+        0x20   End Stopper
+    If Main is 0x2: (byte 2 is unused)
+    If Main is 0x3:
+        0x0:    Normal coin
+        (missing: 0x1 (red coin?))
+        0x2:    Blue coin (though this one is not mapped to an object)
+    If Main is 0x4: (byte 2 is unused)
+    If Main is 0x5:
+        0x0: Used Item Block
+        0x1: Stone Block
+        0x2: Wooden Block
+        0x3: Red Block
+    If Main is 0x6: (byte 2 is unused)
+    If Main is 0x7: (byte 2 is unused)
+    If Main is 0x8: (this Main value is unused)
+    If Main is 0x9:
+        (missing: 0x0, 0x1)
+        0x2    Top Half
+    If Main is 0xA: (byte 2 is unused)
+    If Main is 0xB or 0xC:
+        _-¯¯ ¯¯-_ __-- -¯¯¯ ¯¯¯- --__ ____ ---- ---- ¯¯¯¯ ¯¯¯¯ ---- ---- ____
+
+        ¯¯-_ _-¯¯ ¯¯¯- --__ __-- -¯¯¯ ¯¯¯¯ ---- ---- ____ ____ ---- ---- ¯¯¯¯
+        0B00 0B01 0B02 0B03 0B04 0B05 0B0B 0B0C 0B0D 0B0E 0B0F 0B10 0B11 0B12
+        0C00 0C01 0C02 0C03 0C04 0C05 0C0B 0C0C 0C0D 0C0E 0C0F 0C10 0C11 0C12
+
+        0x0    Steep Upslope
+        0x1    Steep Downslope
+        0x2    Upslope 1
+        0x3    Upslope 2
+        0x4    Downslope 1
+        0x5    Downslope 2
+        0xA    Slope Edge (solid)
+        0xB    Gentle Upslope 1
+        0xC    Gentle Upslope 2
+        0xD    Gentle Upslope 3
+        0xE    Gentle Upslope 4
+        0xF    Gentle Downslope 1
+        0x10   Gentle Downslope 2
+        0x11   Gentle Downslope 3
+        0x12   Gentle Downslope 4
+    If Main is 0xD: (this Main value is unused)
+    If Main is 0xE: (byte 2 is unused)
+    If Main is 0xF:
+        (missing: 0x0, 0x1, 0x2, 0x3, 0x4)
+        0x5    ?
+    If Main is 0x10:
+        0x0    Pipe Up - Left
+        0x1    Pipe Up - Right
+        0x2    Pipe Down - Left
+        0x3    Pipe Down - Right
+        0x4    Pipe Left - Top
+        0x5    Pipe Left - Bottom
+        0x6    Pipe Right - Top
+        0x7    Pipe Right - Bottom
+        0x8    Mini Pipe Up
+        0x9    Mini Pipe Down
+        0xA    Mini Pipe Left
+        0xB    Mini Pipe Right
+        0xC    Vertical Pipe Middle - Left
+        0xD    Vertical Pipe Middle - Right
+        (missing: 0xE, 0xF)
+        0x10   Horizontal Pipe Middle - Top
+        0x11   Horizontal Pipe Middle - Bottom
+        (missing: 0x12, 0x13, 0x14, 0x15, 0x16)
+        0x17   Mini Pipe Vertical
+        0x18   Mini Pipe Horizontal
+        (missing: 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20, 0x21, 0x22)
+        0x23   Pipe Joint (both giant and mini)
+    If Main is 0x11:
+        0x0    Left Slow
+        0x1    Right Slow
+        0x2    Left Fast
+        0x3    Right Fast
+    If Main is 0x12: (byte 2 is unused)
+    If Main is 0x13:
+        0x0    Facing Left
+        0x1    Facing Right
+    If Main is 0x14:
+        (missing: 0x0)
+        0x1    ?
+    If Main is 0x15: (this Main value is unused)
+    If Main is 0x16: (byte 2 is unused)
+
+
+Byte 3 - Properties 2:
+    If Main is 0xF:
+        0x0    Green Pipe
+        0x1    Red Pipe
+        0x2    Yellow Pipe
+    If Main is 0x10:
+        0x0    Normal Spikes
+        0x1    "Kanji Wall" 2?
+
+
+Byte 4 - Collision Type: (missing: 0x20, 0x23)
+0x0    No Colls
+0x1    Solid
+0x2    SOT
+0x3    SOB
+0x21   Sloped SOT (unknown difference from the other one; see: Pa0_jyotyu, Pa1_7-20_2)
+0x22   Sloped SOT (unknown difference from the other one; see: Pa0_jyotyu, Pa1_7-20_2)
+
+
+Byte 5 - Terrain Type: (missing: 0x3)
+0x0
+0x1    Ice
+0x2    Snow
+0x4    Sand
+0x5    Grass
+
+
+Byte 6 - Pad:
+0x0
+
+
+Byte 7 - Pad:
+0x0
