@@ -2245,7 +2245,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setuptile()
 
 
-    def saveImage(self, nml=False):
+    def saveImage(self, nml=False, noalpha=False):
 
         fn = QtWidgets.QFileDialog.getSaveFileName(self, 'Choose a new filename', '', '.png (*.png)')[0]
         if fn == '': return
@@ -2258,7 +2258,12 @@ class MainWindow(QtWidgets.QMainWindow):
         Yoffset = 0
 
         for tile in Tileset.tiles:
-            painter.drawPixmap(Xoffset, Yoffset, tile.normalmap if nml else tile.image)
+            tileimg = tile.image
+            if nml:
+                tileimg = tile.normalmap
+            else:
+                tileimg = tile.noalpha
+            painter.drawPixmap(Xoffset, Yoffset, tileimg)
             Xoffset += 60
             if Xoffset >= 960:
                 Xoffset = 0
@@ -2275,6 +2280,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def saveNml(self):
         self.saveImage(True)
+
+
+    def saveImageNoAlpha(self):
+        self.saveImage(False, True)
 
 
     def saveTileset(self):
@@ -2642,6 +2651,7 @@ class MainWindow(QtWidgets.QMainWindow):
         fileMenu.addAction("Open...", self.openTileset, QtGui.QKeySequence.Open)
         fileMenu.addAction("Import Image...", self.openImage, QtGui.QKeySequence('Ctrl+I'))
         fileMenu.addAction("Export Image...", self.saveImage, QtGui.QKeySequence('Ctrl+E'))
+        fileMenu.addAction("Export Image (No Alpha)...", self.saveImageNoAlpha)
         fileMenu.addAction("Import Normal Map...", self.openNml, QtGui.QKeySequence('Ctrl+Shift+I'))
         fileMenu.addAction("Export Normal Map...", self.saveNml, QtGui.QKeySequence('Ctrl+Shift+E'))
         fileMenu.addAction("Save", self.saveTileset, QtGui.QKeySequence.Save)
