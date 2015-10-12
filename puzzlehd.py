@@ -2256,7 +2256,7 @@ class MainWindow(QtWidgets.QMainWindow):
             tileimg = tile.image
             if nml:
                 tileimg = tile.normalmap
-            else:
+            elif noalpha:
                 tileimg = tile.noalpha
             painter.drawPixmap(Xoffset, Yoffset, tileimg)
             Xoffset += 60
