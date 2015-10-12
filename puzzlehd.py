@@ -2136,11 +2136,6 @@ class MainWindow(QtWidgets.QMainWindow):
         meta = []
         for i in range(len(metadata) // 6):
             meta.append(struct.unpack_from('>HBBxB', metadata, i * 6))
-        meta = []
-        objstrings = b''
-        for i in range(256):
-            meta.append((i * 5, 1, 1, 0))
-            objstrings += b'\x00' + bytes([i]) + b'\x03\xFE\xFF'
 
         tilelist = [[]]
         upperslope = [0, 0]
